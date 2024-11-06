@@ -23,17 +23,14 @@ class ProjectViewSet(viewsets.ModelViewSet):
         pending_tasks = total_tasks - completed_tasks
         overdue_tasks = project.tasks.filter(due_date__lt=timezone.now().date(), todo__completed=False).count()
     
-    # Calculate average completion time in Python
         completed_tasks_with_time = project.tasks.filter(todo__completed=True, todo__completion_time__isnull=False)
         total_time = timedelta()
 
-    # Calculate total time difference for completed tasks
         if completed_tasks_with_time.exists():  # Check if there are completed tasks with completion time
             for task in completed_tasks_with_time:
                 if task.todo.completion_time and task.todo.created_at:
                     time_diff = task.todo.completion_time - task.todo.created_at
                     total_time += time_diff
-        # Calculate the average time if there are completed tasks with time
             average_completion_time = total_time / completed_tasks_with_time.count()
         else:
             average_completion_time = None
